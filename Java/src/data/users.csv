@@ -1,0 +1,4 @@
+userId,name,email,password,type,adminLevel,trustScore
+1,System Admin,admin@roadpulse.com,JAvlGPq9JyTdtvBO6x2llnRI1+gxwIyPqCKAn3THIKk=,admin,1,0
+2,Mahi,mahi@gmail.com,jZae727K08KaOmKSgOaGzww/XVqGr/PKEgIMkjrcbJI=,commuter,0,100
+3,Mahi,vaibongo20@gmail.com,kFtHnMtpA71wVATfzwIsydkJngbthwJ7Kddt1O+MOKM=,commuter,0,100
