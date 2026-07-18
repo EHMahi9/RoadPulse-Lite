@@ -7,6 +7,7 @@ import service.AlertService;
 import service.IncidentService;
 import service.RoadService;
 import service.UserService;
+import util.DataSeeder;
 
 public class Main {
 
@@ -46,6 +47,21 @@ public class Main {
 
         // ==============================
         // Application
+        // ==============================
+
+        // create dataseeder
+        DataSeeder dataSeeder = new DataSeeder(
+        userService,
+        roadService,
+        incidentService,
+        alertService
+);
+
+        // Load demo data
+        dataSeeder.seedData();
+
+        // ==============================
+        // Menu
         // ==============================
 
         MainMenu menu =

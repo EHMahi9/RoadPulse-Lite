@@ -2,10 +2,7 @@ package util;
 
 import model.Admin;
 import model.Commuter;
-import model.PublicAlert;
 import model.Road;
-import model.Incident;
-
 import service.AlertService;
 import service.IncidentService;
 import service.RoadService;
@@ -27,7 +24,6 @@ public class DataSeeder {
         this.roadService = roadService;
         this.incidentService = incidentService;
         this.alertService = alertService;
-
     }
 
     public void seedData() {
@@ -35,18 +31,15 @@ public class DataSeeder {
         seedUsers();
         seedRoads();
 
-        // These will be enabled after we finish
-        // IncidentService and AlertService.
-
+        // We'll enable these later.
         // seedIncidents();
         // seedAlerts();
-
     }
 
     private void seedUsers() {
 
         Admin admin = new Admin(
-                1,
+                IdGenerator.nextUserId(),
                 "System Admin",
                 "admin@roadpulse.com",
                 "admin123",
@@ -54,7 +47,7 @@ public class DataSeeder {
         );
 
         Commuter commuter = new Commuter(
-                2,
+                IdGenerator.nextUserId(),
                 "Mahi",
                 "mahi@gmail.com",
                 "123456",
@@ -63,14 +56,13 @@ public class DataSeeder {
 
         userService.registerUser(admin);
         userService.registerUser(commuter);
-
     }
 
     private void seedRoads() {
 
         roadService.addRoad(
                 new Road(
-                        1,
+                        IdGenerator.nextRoadId(),
                         "Dhaka-Chattogram Highway",
                         "Dhaka",
                         "Open"
@@ -79,7 +71,7 @@ public class DataSeeder {
 
         roadService.addRoad(
                 new Road(
-                        2,
+                        IdGenerator.nextRoadId(),
                         "Airport Road",
                         "Dhaka",
                         "Busy"
@@ -88,7 +80,7 @@ public class DataSeeder {
 
         roadService.addRoad(
                 new Road(
-                        3,
+                        IdGenerator.nextRoadId(),
                         "Mirpur Road",
                         "Dhaka",
                         "Open"
@@ -97,7 +89,7 @@ public class DataSeeder {
 
         roadService.addRoad(
                 new Road(
-                        4,
+                        IdGenerator.nextRoadId(),
                         "Dhaka-Mymensingh Highway",
                         "Gazipur",
                         "Under Maintenance"
@@ -106,13 +98,12 @@ public class DataSeeder {
 
         roadService.addRoad(
                 new Road(
-                        5,
+                        IdGenerator.nextRoadId(),
                         "Savar Road",
                         "Savar",
                         "Open"
                 )
         );
-
     }
 
 }
