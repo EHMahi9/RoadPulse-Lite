@@ -1,16 +1,19 @@
 package menu;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import model.Commuter;
+import model.Incident;
+import model.PublicAlert;
 import model.Road;
 import service.AlertService;
 import service.IncidentService;
 import service.RoadService;
 import service.UserService;
-import model.Incident;
 import util.IdGenerator;
-
-import java.time.LocalDateTime;
+import util.InputHelper;
+import util.TableFormatter;
 
 public class CommuterMenu {
 
@@ -50,10 +53,7 @@ public class CommuterMenu {
             System.out.println("5. View Public Alerts");
             System.out.println("6. Logout");
 
-            System.out.print("\nChoose Option : ");
-
-            int choice = InputHelper.scanner.nextInt();
-            InputHelper.scanner.nextLine();
+            int choice = InputHelper.readInt("\nChoose Option : ", 1, 6);
 
             switch (choice) {
 
@@ -79,12 +79,8 @@ public class CommuterMenu {
 
                 case 6:
 
-                    System.out.println("\nLogging out...");
+                    System.out.println("\nLogging out...\n");
                     return;
-
-                default:
-
-                    System.out.println("\nInvalid Choice.");
 
             }
 
@@ -98,7 +94,7 @@ public class CommuterMenu {
         System.out.println("======================================");
         System.out.println("       COMMUTER DASHBOARD");
         System.out.println("======================================");
-        System.out.println("Welcome : " + commuter.getName());
+        System.out.println("Welcome: " + commuter.getName());
         System.out.println();
 
     }
@@ -106,8 +102,9 @@ public class CommuterMenu {
     private void viewProfile() {
 
         System.out.println("\n========== MY PROFILE ==========");
-
         System.out.println(commuter);
+
+        InputHelper.pressEnterToContinue();
 
     }
 
@@ -118,157 +115,162 @@ public class CommuterMenu {
         if (roads.isEmpty()) {
 
             System.out.println("\nNo roads available.");
+            InputHelper.pressEnterToContinue();
             return;
 
         }
 
-        System.out.println("\n========== ROADS ==========");
+        String[] headers = {"ID", "Road Name", "District", "Status"};
+        List<String[]> rows = new ArrayList<>();
 
-        for (Road road : roads) {
+        for (Road r : roads) {
 
-            System.out.println(road);
-            System.out.println("--------------------------------");
+            rows.add(new String[]{
+                    String.valueOf(r.getRoadId()),
+                    r.getRoadName(),
+                    r.getDistrict(),
+                    r.getStatus()
+            });
 
         }
 
+        TableFormatter.printTable("========== ROADS ==========", headers, rows);
+        InputHelper.pressEnterToContinue();
+
     }
 
-    // ===========================
-    // Remaining Methods
-    // ===========================
-
     private void reportIncident() {
+
+        System.out.println("\n========== REPORT INCIDENT ==========");
+
+        List<Road> roads = roadService.getAllRoads();
+
+        if (roads.isEmpty()) {
+
+            System.out.println("\nNo roads available.");
+            InputHelper.pressEnterToContinue();
+            return;
+
+        }
+
+        System.out.println("\nAvailable Roads:");
+
+        for (Road r : roads) {
+
+            System.out.println(r.getRoadId() + " - " + r.getRoadName());
+
+        }
+
+        int roadId = InputHelper.readInt("\nRoad ID : ");
+        Road road = roadService.findRoadById(roadId);
+
+        if (road == null) {
+
+            System.out.println("\nRoad not found.");
+            InputHelper.pressEnterToContinue();
+            return;
+
+        }
+
+        String incidentType = InputHelper.readString("Incident Type : ");
+        String description = InputHelper.readString("Description : ");
+
+        Incident incident = new Incident(
+                IdGenerator.nextIncidentId(),
+                incidentType,
+                description,
+                LocalDateTime.now().toString(),
+                "Pending",
+                road,
+                commuter
+        );
+
+        boolean success = incidentService.reportIncident(incident);
+
+        if (success) {
+
+            System.out.println("\nIncident reported successfully.");
+
+        } else {
+
+            System.out.println("\nFailed to report incident.");
+
+        }
+
+        InputHelper.pressEnterToContinue();
 
     }
 
     private void viewMyIncidents() {
 
+        List<Incident> allIncidents = incidentService.getAllIncidents();
+        boolean found = false;
+
+        String[] headers = {"ID", "Type", "Status", "Road", "Time", "Description"};
+        List<String[]> rows = new ArrayList<>();
+
+        for (Incident i : allIncidents) {
+
+            if (i.getReporter().getUserId() == commuter.getUserId()) {
+
+                rows.add(new String[]{
+                        String.valueOf(i.getIncidentId()),
+                        i.getIncidentType(),
+                        i.getStatus(),
+                        i.getRoad().getRoadName(),
+                        i.getReportTime(),
+                        i.getDescription()
+                });
+
+                found = true;
+
+            }
+
+        }
+
+        if (!found) {
+
+            System.out.println("\nYou have not reported any incidents.");
+
+        } else {
+
+            TableFormatter.printTable("========== MY INCIDENTS ==========", headers, rows);
+
+        }
+
+        InputHelper.pressEnterToContinue();
+
     }
 
     private void viewAlerts() {
 
-    }
+        List<PublicAlert> alerts = alertService.getAllAlerts();
 
-}
+        if (alerts.isEmpty()) {
 
-private void reportIncident() {
-
-    System.out.println("\n========== REPORT INCIDENT ==========");
-
-    List<Road> roads = roadService.getAllRoads();
-
-    if (roads.isEmpty()) {
-
-        System.out.println("\nNo roads available.");
-        return;
-
-    }
-
-    System.out.println("\nAvailable Roads:");
-
-    for (Road road : roads) {
-
-        System.out.println(
-                road.getRoadId() +
-                " - " +
-                road.getRoadName()
-        );
-
-    }
-
-    System.out.print("\nRoad ID : ");
-    int roadId = InputHelper.scanner.nextInt();
-    InputHelper.scanner.nextLine();
-
-    Road road = roadService.findRoadById(roadId);
-
-    if (road == null) {
-
-        System.out.println("\nRoad not found.");
-        return;
-
-    }
-
-    System.out.print("Incident Type : ");
-    String incidentType = InputHelper.scanner.nextLine();
-
-    System.out.print("Description : ");
-    String description = InputHelper.scanner.nextLine();
-
-    Incident incident = new Incident(
-            IdGenerator.nextIncidentId(),
-            incidentType,
-            description,
-            LocalDateTime.now().toString(),
-            "Pending",
-            road,
-            commuter
-    );
-
-    boolean success =
-            incidentService.reportIncident(incident);
-
-    if (success) {
-
-        System.out.println("\nIncident reported successfully.");
-
-    } else {
-
-        System.out.println("\nFailed to report incident.");
-
-    }
-
-}
-
-private void viewMyIncidents() {
-
-    List<Incident> incidents =
-            incidentService.getAllIncidents();
-
-    boolean found = false;
-
-    System.out.println("\n========== MY INCIDENTS ==========");
-
-    for (Incident incident : incidents) {
-
-        if (incident.getReporter().getUserId()
-                == commuter.getUserId()) {
-
-            System.out.println(incident);
-            System.out.println("--------------------------------");
-
-            found = true;
+            System.out.println("\nNo public alerts available.");
+            InputHelper.pressEnterToContinue();
+            return;
 
         }
 
-    }
+        String[] headers = {"ID", "Title", "Road", "Date", "Message"};
+        List<String[]> rows = new ArrayList<>();
 
-    if (!found) {
+        for (PublicAlert a : alerts) {
 
-        System.out.println("\nYou have not reported any incidents.");
+            rows.add(new String[]{
+                    String.valueOf(a.getAlertId()),
+                    a.getTitle(),
+                    a.getRoad().getRoadName(),
+                    a.getPublishDate(),
+                    a.getMessage()
+            });
 
-    }
+        }
 
-}
-
-private void viewAlerts() {
-
-    List<PublicAlert> alerts =
-            alertService.getAllAlerts();
-
-    if (alerts.isEmpty()) {
-
-        System.out.println("\nNo public alerts available.");
-        return;
-
-    }
-
-    System.out.println("\n========== PUBLIC ALERTS ==========");
-
-    for (PublicAlert alert : alerts) {
-
-        System.out.println(alert);
-        System.out.println("--------------------------------");
+        TableFormatter.printTable("========== PUBLIC ALERTS ==========", headers, rows);
+        InputHelper.pressEnterToContinue();
 
     }
 

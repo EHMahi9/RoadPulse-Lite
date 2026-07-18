@@ -1,0 +1,56 @@
+# ========== Java ==========
+*.class
+*.jar
+*.war
+*.nar
+Java/out/
+Java/bin/
+Java/build/
+Java/target/
+Java/.gradle/
+Java/build.gradle
+Java/pom.xml
+Java/gradlew
+Java/gradlew.bat
+Java/gradle/
+
+# ========== Data files (auto-generated persistence) ==========
+Java/src/data/
+!Java/src/data/.gitkeep
+
+# ========== IDE ==========
+.vscode/
+.idea/
+*.iml
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+nbproject/
+*.swp
+*.swo
+*~
+
+# ========== OS ==========
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ========== Node (Website) ==========
+Website/node_modules/
+Website/dist/
+Website/build/
+Website/.env
+Website/.env.local
+
+# ========== Diagrams ==========
+diagrams/
+
+# ========== Logs ==========
+*.log
+logs/
+
+# ========== Temp ==========
+/tmp/
+*.tmp

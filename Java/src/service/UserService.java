@@ -3,6 +3,7 @@ package service;
 import java.util.List;
 import model.User;
 import repository.UserRepository;
+import util.PasswordUtil;
 
 public class UserService {
 
@@ -13,6 +14,26 @@ public class UserService {
     }
 
     public boolean registerUser(User user) {
+
+        if (user == null) {
+            return false;
+        }
+
+        if (userRepository.findByEmail(user.getEmail()) != null) {
+            return false;
+        }
+
+        // Hash password before storing
+        user.setPassword(PasswordUtil.hashPassword(user.getPassword()));
+
+        return userRepository.save(user);
+    }
+
+    /**
+     * Load a user directly without hashing (used when restoring data from files
+     * where the password is already hashed).
+     */
+    public boolean loadUser(User user) {
 
         if (user == null) {
             return false;
@@ -33,7 +54,7 @@ public class UserService {
             return null;
         }
 
-        if (!user.getPassword().equals(password)) {
+        if (!PasswordUtil.checkPassword(password, user.getPassword())) {
             return null;
         }
 

@@ -31,9 +31,6 @@ public class DataSeeder {
         seedUsers();
         seedRoads();
 
-        // We'll enable these later.
-        // seedIncidents();
-        // seedAlerts();
     }
 
     private void seedUsers() {
